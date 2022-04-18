@@ -5,30 +5,32 @@ int M, N, K;
 bool map[500][500];
 
 void BFS(const int i, const int j) {
-	int k = 0;
 	queue<pair<int, int>> q;
 	pair<int, int> pos;
 	q.push(make_pair(i, j));
+	map[i][j] = false;
 	while (!q.empty()) {
 		pos = q.front();
 		q.pop();
-		map[pos.first][pos.second] = false;
-		k++;
 		//up
 		if (!pos.second && map[pos.first][pos.second - 1]) {
 			q.push(make_pair(pos.first, pos.second - 1));
+			map[pos.first][pos.second - 1] = false;
 		}
 		//down
 		if (pos.second != N - 1 && map[pos.first][pos.second + 1]) {
 			q.push(make_pair(pos.first, pos.second + 1));
+			map[pos.first][pos.second + 1] = false;
 		}
 		//left
 		if (!pos.first && map[pos.first - 1][pos.second]) {
 			q.push(make_pair(pos.first - 1, pos.second));
+			map[pos.first - 1][pos.second] = false;
 		}
 		//right
 		if (pos.first != M - 1 && map[pos.first + 1][pos.second]) {
 			q.push(make_pair(pos.first + 1, pos.second));
+			map[pos.first + 1][pos.second] = false;
 		}
 	}
 }
