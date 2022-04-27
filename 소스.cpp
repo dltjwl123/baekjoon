@@ -1,37 +1,67 @@
 #include <iostream>
 #include <queue>
 using namespace std;
-int M, N, K;
-bool map[500][500];
+int M, N;
+bool map[1000][1000];
 
-void BFS(const int i, const int j) {
-	queue<pair<int, int>> q;
+int BFS(const int row, const int col) {
+	int ans = 0;
+	queue<pair<int, int>> q1, q2;
 	pair<int, int> pos;
-	q.push(make_pair(i, j));
-	map[i][j] = false;
-	while (!q.empty()) {
-		pos = q.front();
-		q.pop();
-		//up
-		if (!pos.second && map[pos.first][pos.second - 1]) {
-			q.push(make_pair(pos.first, pos.second - 1));
-			map[pos.first][pos.second - 1] = false;
+	q1.push({ row,col });
+	while (!q1.empty() || !q2.empty()) {
+		cout << "\nq1, ans = " << ans << "\n";
+		while (!q1.empty()) {
+			pos = q1.front();
+			q1.pop();
+			cout << "pos = (" << pos.first<<", "<<pos.second << "), ";
+			//up
+			if (pos.first && !map[pos.first - 1][pos.second]) {
+				map[pos.first - 1][pos.second] = true;
+				q2.push({ pos.first - 1,pos.second });
+			}
+			//down
+			if (pos.first != N - 1 && !map[pos.first + 1][pos.second]) {
+				map[pos.first + 1][pos.second] = true;
+				q2.push({ pos.first + 1,pos.second });
+			}
+			//left
+			if (pos.second && !map[pos.first][pos.second - 1]) {
+				map[pos.first][pos.second - 1] = true;
+				q2.push({ pos.first,pos.second - 1 });
+			}
+			//right
+			if (pos.second != M - 1 && !map[pos.first][pos.second + 1]) {
+				map[pos.first][pos.second + 1] = true;
+				q2.push({ pos.first,pos.second + 1 });
+			}
 		}
-		//down
-		if (pos.second != N - 1 && map[pos.first][pos.second + 1]) {
-			q.push(make_pair(pos.first, pos.second + 1));
-			map[pos.first][pos.second + 1] = false;
+		if (q2.empty()) return ans;
+		ans++;
+		cout << "\nq2, ans = " << ans << "\n";
+		while (!q2.empty()) {
+			pos = q2.front();
+			q2.pop();
+			cout << "pos = (" << pos.first << ", " << pos.second << "), ";
+			if (pos.first && !map[pos.first - 1][pos.second]) {
+				map[pos.first - 1][pos.second] = true;
+				q1.push({ pos.first - 1,pos.second });
+			}
+			if (pos.first != N - 1 && !map[pos.first + 1][pos.second]) {
+				map[pos.first + 1][pos.second] = true;
+				q1.push({ pos.first + 1,pos.second });
+			}
+			if (pos.second && !map[pos.first][pos.second - 1]) {
+				map[pos.first][pos.second - 1] = true;
+				q1.push({ pos.first,pos.second - 1 });
+			}
+			if (pos.second != M - 1 && !map[pos.first][pos.second + 1]) {
+				map[pos.first][pos.second + 1] = true;
+				q1.push({ pos.first,pos.second + 1 });
+			}
 		}
-		//left
-		if (!pos.first && map[pos.first - 1][pos.second]) {
-			q.push(make_pair(pos.first - 1, pos.second));
-			map[pos.first - 1][pos.second] = false;
-		}
-		//right
-		if (pos.first != M - 1 && map[pos.first + 1][pos.second]) {
-			q.push(make_pair(pos.first + 1, pos.second));
-			map[pos.first + 1][pos.second] = false;
-		}
+		if (q1.empty()) return ans;
+		ans++;
 	}
 }
 int main() {
@@ -39,23 +69,18 @@ int main() {
 	cin.tie(0);
 	cout.tie(0);
 
-	int T, m, n;
-	cin >> T;
-	while (T--) {
-		cin >> M >> N >> K;
-		while (K--) {
-			cin >> m >> n;
-			map[m][n] = true;
+	cin >> M >> N;
+	int ans = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
 		}
-		int group = 0;
-		for (int i = 0; i < M; i++) {
-			for (int j = 0; j < N; j++) {
-				if (map[i][j]) {
-					BFS(i, j);
-					group++;
-				}
-			}
-		}
-		cout << group << "\n";
 	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (map[i][j]) ans += BFS(i, j);
+		}
+	}
+	if (!ans) cout << "-1\n";
+	else  cout << ans << "\n";
 }
